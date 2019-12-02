@@ -109,21 +109,28 @@ fn main() {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_computer_example_from_docs() {
-        let mut computer = IntcodeComputer::new(vec!(2,4,4,5,99,0));
-        let output = computer.run();
+    macro_rules! test_computer {
+        ($($name:ident: $value:expr,)*) => {
+            $(
+                #[test]
+                fn $name() {
+                    let (program, expected_program, expected_output) = $value;
+                    let mut computer = IntcodeComputer::new(program.to_vec());
 
-        assert_eq!(output, 2);
-        assert_eq!(computer.program, vec!(2,4,4,5,99,9801));
+                    let output = computer.run();
+
+                    assert_eq!(output, expected_output);
+                    assert_eq!(computer.program, expected_program.to_vec());
+                }
+            )*
+        }
     }
 
-    #[test]
-    fn test_computer_example_from_docs_2() {
-        let mut computer = IntcodeComputer::new(vec!(1,1,1,4,99,5,6,0,99));
-        let output = computer.run();
-
-        assert_eq!(output, 30);
-        assert_eq!(computer.program, vec!(30,1,1,4,2,5,6,0,99));
+    // Testing examples from challenge docs
+    test_computer! {
+        test_computer_example_1: ([1,0,0,0,99], [2,0,0,0,99], 2),
+        test_computer_example_2: ([2,3,0,3,99], [2,3,0,6,99], 2),
+        test_computer_example_3: ([2,4,4,5,99,0], [2,4,4,5,99,9801], 2),
+        test_computer_example_4: ([1,1,1,4,99,5,6,0,99], [30,1,1,4,2,5,6,0,99], 30),
     }
 }
