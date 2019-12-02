@@ -76,7 +76,7 @@ fn main() {
             if number < 100 {
                 number
             } else {
-                panic!("verb is out of range (Expected: 0 <= noun < 100)")
+                panic!("noun is out of range (Expected: 0 <= noun < 100)")
             }
         },
         None => 0,
