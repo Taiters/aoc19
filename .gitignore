@@ -1,1 +1,3 @@
-input.txt
+day*/input.txt
+day*/target
+**/*.rs.bk
