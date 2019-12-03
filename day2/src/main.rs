@@ -49,9 +49,6 @@ impl IntcodeComputer {
 
     fn run(&mut self) -> u32 {
         loop {
-            let instruction = self.current_instruction();
-            println!("Executing: {:?}", instruction);
-
             match self.current_instruction() {
                 Instruction::Add(a, b, c) => {
                     self.set(c as usize, self.get(a as usize) + self.get(b as usize));
@@ -67,42 +64,36 @@ impl IntcodeComputer {
     }
 }
 
+fn solve_inputs(program: Vec<u32>, target: u32) -> Option<(u32, u32)> {
+    for noun in 0..100 {
+        for verb in 0..100 {
+            let mut computer = IntcodeComputer::new(program.clone());
+            computer.set(1, noun);
+            computer.set(2, verb);
+
+            if computer.run() == target {
+                return Some((noun, verb));
+            }
+        }
+    }
+    None
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let input_file = args.get(1).expect("Input file required");
-    let noun: u32 = match args.get(2) {
-        Some(n) => {
-            let number = n.parse().expect("Expected a number for noun");
-            if number < 100 {
-                number
-            } else {
-                panic!("noun is out of range (Expected: 0 <= noun < 100)")
-            }
-        },
-        None => 0,
-    };
-    let verb: u32 = match args.get(3) {
-        Some(n) => {
-            let number = n.parse().expect("Expected a number for verb");
-            if number < 100 {
-                number
-            } else {
-                panic!("verb is out of range (Expected: 0 <= verb < 100)")
-            }
-        },
-        None => 0,
-    };
+    let target: u32 = args.get(2).expect("Target value required")
+        .parse().expect("Expected a number for target value");
 
-    let program = fs::read_to_string(input_file).expect("Unable to read input file")
+    let program: Vec<u32> = fs::read_to_string(input_file).expect("Unable to read input file")
         .split(',')
         .map(|x| x.parse().unwrap())
         .collect();
 
-    let mut computer = IntcodeComputer::new(program);
-    computer.set(1, noun);
-    computer.set(2, verb);
-
-    println!("{}", computer.run());
+    match solve_inputs(program, target) {
+        Some((noun, verb)) => println!("Noun: {}, Verb: {}, Result: {}", noun, verb, 100 * noun + verb),
+        None => println!("No noun/verb combination available for: {}", target),
+    }
 }
 
 #[cfg(test)]
