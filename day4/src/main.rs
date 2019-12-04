@@ -3,8 +3,15 @@ use std::collections::HashMap;
 
 fn find_matches(range: Range<u32>) -> Vec<u32> {
     let mut results = Vec::new();
-    for i in range {
-        let s = i.to_string();
+    let range: Vec<u32> = range.collect();
+    let mut index = 0;
+    loop {
+        if index >= range.len() {
+            break;
+        }
+
+        let i = range[index];
+        let mut s = i.to_string();
         let s_bytes = s.as_bytes();
         let mut sorted_bytes: Vec<u8> = s_bytes.to_vec();
         sorted_bytes.sort();
@@ -19,6 +26,19 @@ fn find_matches(range: Range<u32>) -> Vec<u32> {
             match counts.values().find(|&&x| x == 2) {
                 Some(_) => results.push(i),
                 None => ()
+            }
+            index += 1;
+        } else {
+            match s_bytes.windows(2).enumerate().find(|(idx, values)| values[1] < values[0]) {
+                Some((idx, _)) => {
+                    let value = s.get(idx..idx+1).unwrap();
+                    let value = value.repeat(s.len() - idx -1);
+                    s.replace_range(idx+1..s.len(), &value);
+
+                    let jump: usize = (&s.parse().unwrap() - i) as usize;
+                    index += jump;
+                }
+                None => index += 1
             }
         }
     }
