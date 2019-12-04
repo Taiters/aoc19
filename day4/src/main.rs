@@ -29,7 +29,7 @@ fn find_matches(range: Range<u32>) -> Vec<u32> {
             }
             index += 1;
         } else {
-            match s_bytes.windows(2).enumerate().find(|(idx, values)| values[1] < values[0]) {
+            match s_bytes.windows(2).enumerate().find(|(_, values)| values[1] < values[0]) {
                 Some((idx, _)) => {
                     let value = s.get(idx..idx+1).unwrap();
                     let value = value.repeat(s.len() - idx -1);
